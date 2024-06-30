@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 0;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .cross, .circle {
+            width: 60px;
+            height: 60px;
+        }
+    </style>
+    <title>Tic Tac Toe</title>
+</head>
+<body>
+    <div>
+        <div id="game-message"></div>
+        <div id="board">
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+        </div>
+    </div>
+
+    <script>
+        const board = document.getElementById('board');
+        const cells = board.querySelectorAll('.cell');
+        const gameMessage = document.getElementById('game-message');
+
+        let currentPlayer = 'cross';
+        let gameOver = false;
+
+        function handleCellClick(event) {
+            const cell = event.target;
+
+            if (!cell.querySelector('.cross, .circle') && !gameOver) {
+                const img = document.createElement('img');
+                img.src = currentPlayer === 'cross' ? 'img/hrestik.png' : 'img/krugok.png';
+                img.alt = currentPlayer;
+                img.classList.add(currentPlayer);
+                cell.appendChild(img);
+
+                if (checkForWin()) {
+                    gameMessage.textContent = `${currentPlayer} wins!`;
+                    gameOver = true;
+                } else if (checkForDraw()) {
+                    gameMessage.textContent = 'It is a draw!';
+                    gameOver = true;
+                } else {
+                    currentPlayer = currentPlayer === 'cross' ? 'circle' : 'cross';
+                }
+            }
+        }
+
+        function checkForWin() {
+            const winningCombinations = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+
+            for (let i = 0; i < winningCombinations.length; i++) {
+                const [a, b, c] = winningCombinations[i];
+
+                if (
+                    cells[a].querySelector('.cross, .circle') &&
+                    cells[b].querySelector('.cross, .circle') &&
+                    cells[c].querySelector('.cross, .circle') &&
+                    cells[a].querySelector('.cross, .circle').classList.contains(currentPlayer) &&
+                    cells[b].querySelector('.cross, .circle').classList.contains(currentPlayer) &&
+                    cells[c].querySelector('.cross, .circle').classList.contains(currentPlayer)
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        function checkForDraw() {
+            for (let i = 0; i < cells.length; i++) {
+                if (!cells[i].querySelector('.cross, .circle')) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+    </script>
+</body>
+</html>
